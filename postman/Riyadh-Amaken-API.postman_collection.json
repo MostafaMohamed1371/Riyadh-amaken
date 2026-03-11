@@ -1,0 +1,661 @@
+{
+	"info": {
+		"_postman_id": "riyadh-amaken-api",
+		"name": "Riyadh Amaken API",
+		"description": "API collection for Riyadh Amaken. All endpoints except Register and Login require authentication: call Login or Register first, copy data.token into the auth_token variable, then use other requests (Bearer token is sent automatically).",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{auth_token}}",
+				"type": "string"
+			}
+		]
+	},
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://127.0.0.1:8000/api"
+		},
+		{
+			"key": "slider_id",
+			"value": "1"
+		},
+		{
+			"key": "category_id",
+			"value": "1"
+		},
+		{
+			"key": "gallery_id",
+			"value": "1"
+		},
+		{
+			"key": "activity_id",
+			"value": "1"
+		},
+		{
+			"key": "event_id",
+			"value": "1"
+		},
+		{
+			"key": "auth_token",
+			"value": ""
+		},
+		{
+			"key": "user_id",
+			"value": "1"
+		}
+	],
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Register",
+					"request": {
+						"auth": {"type": "noauth"},
+						"method": "POST",
+						"header": [{"key": "Content-Type", "value": "application/json", "type": "text"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Test User\",\n  \"email\": \"test@example.com\",\n  \"password\": \"password\",\n  \"password_confirmation\": \"password\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/register",
+							"host": ["{{base_url}}"],
+							"path": ["register"]
+						},
+						"description": "Register a new user. Returns token in response; save to auth_token for authenticated requests."
+					}
+				},
+				{
+					"name": "Login",
+					"request": {
+						"auth": {"type": "noauth"},
+						"method": "POST",
+						"header": [{"key": "Content-Type", "value": "application/json", "type": "text"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"test@example.com\",\n  \"password\": \"password\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/login",
+							"host": ["{{base_url}}"],
+							"path": ["login"]
+						},
+						"description": "Login. Returns token in response.data.token; set auth_token and use header: Authorization: Bearer {{auth_token}} for Logout and Get User."
+					}
+				},
+				{
+					"name": "Logout",
+					"request": {
+						"method": "POST",
+						"header": [
+							{"key": "Authorization", "value": "Bearer {{auth_token}}", "type": "text"},
+							{"key": "Accept", "value": "application/json", "type": "text"}
+						],
+						"url": {
+							"raw": "{{base_url}}/logout",
+							"host": ["{{base_url}}"],
+							"path": ["logout"]
+						},
+						"description": "Revoke current token. Requires Bearer token in Authorization header."
+					}
+				},
+				{
+					"name": "Get current user",
+					"request": {
+						"method": "GET",
+						"header": [
+							{"key": "Authorization", "value": "Bearer {{auth_token}}", "type": "text"},
+							{"key": "Accept", "value": "application/json", "type": "text"}
+						],
+						"url": {
+							"raw": "{{base_url}}/user",
+							"host": ["{{base_url}}"],
+							"path": ["user"]
+						},
+						"description": "Get authenticated user. Requires Bearer token."
+					}
+				}
+			]
+		},
+		{
+			"name": "Sliders",
+			"item": [
+				{
+					"name": "List Sliders",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/sliders?per_page=15",
+							"host": ["{{base_url}}"],
+							"path": ["sliders"],
+							"query": [
+								{"key": "per_page", "value": "15", "description": "Items per page (max 100)"}
+							]
+						},
+						"description": "Get paginated list of sliders"
+					}
+				},
+				{
+					"name": "Get Slider",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/sliders/{{slider_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["sliders", "{{slider_id}}"]
+						},
+						"description": "Get single slider by ID"
+					}
+				},
+				{
+					"name": "Create Slider",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{"key": "title", "value": "Welcome Slider", "type": "text"},
+								{"key": "description", "value": "Slider description", "type": "text"},
+								{"key": "image", "type": "file", "src": ""}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/sliders",
+							"host": ["{{base_url}}"],
+							"path": ["sliders"]
+						},
+						"description": "Create slider. Use form-data; image is optional file."
+					}
+				},
+				{
+					"name": "Update Slider",
+					"request": {
+						"method": "PUT",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"Updated Title\",\n  \"description\": \"Updated description\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/sliders/{{slider_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["sliders", "{{slider_id}}"]
+						},
+						"description": "Update slider. For new image use form-data with image file."
+					}
+				},
+				{
+					"name": "Delete Slider",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/sliders/{{slider_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["sliders", "{{slider_id}}"]
+						},
+						"description": "Delete slider. Returns 200 with { \"success\": true, \"message\": \"Slider deleted successfully.\" }"
+					}
+				}
+			]
+		},
+		{
+			"name": "Categories",
+			"item": [
+				{
+					"name": "List Categories",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/categories?per_page=15",
+							"host": ["{{base_url}}"],
+							"path": ["categories"],
+							"query": [
+								{"key": "per_page", "value": "15"}
+							]
+						},
+						"description": "Get paginated list of categories"
+					}
+				},
+				{
+					"name": "Get Category",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/categories/{{category_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["categories", "{{category_id}}"]
+						},
+						"description": "Get single category by ID"
+					}
+				},
+				{
+					"name": "Create Category",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{"key": "title", "value": "Restaurants", "type": "text"},
+								{"key": "description", "value": "Food and dining", "type": "text"},
+								{"key": "no_places", "value": "10", "type": "text"},
+								{"key": "type", "value": "dining", "type": "text"},
+								{"key": "image", "type": "file", "src": ""}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/categories",
+							"host": ["{{base_url}}"],
+							"path": ["categories"]
+						},
+						"description": "Create category"
+					}
+				},
+				{
+					"name": "Update Category",
+					"request": {
+						"method": "PUT",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"Updated Category\",\n  \"description\": \"Updated description\",\n  \"no_places\": 15,\n  \"type\": \"updated_type\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/categories/{{category_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["categories", "{{category_id}}"]
+						},
+						"description": "Update category"
+					}
+				},
+				{
+					"name": "Delete Category",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/categories/{{category_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["categories", "{{category_id}}"]
+						},
+						"description": "Delete category. Returns 200 with { \"success\": true, \"message\": \"Category deleted successfully.\" }"
+					}
+				}
+			]
+		},
+		{
+			"name": "Gallery",
+			"item": [
+				{
+					"name": "List Gallery",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/gallery?per_page=15",
+							"host": ["{{base_url}}"],
+							"path": ["gallery"],
+							"query": [
+								{"key": "per_page", "value": "15"}
+							]
+						},
+						"description": "Get paginated gallery items"
+					}
+				},
+				{
+					"name": "Get Gallery Item",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/gallery/{{gallery_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["gallery", "{{gallery_id}}"]
+						},
+						"description": "Get single gallery item by ID"
+					}
+				},
+				{
+					"name": "Create Gallery Item",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{"key": "link", "value": "https://example.com", "type": "text"},
+								{"key": "image", "type": "file", "src": ""}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/gallery",
+							"host": ["{{base_url}}"],
+							"path": ["gallery"]
+						},
+						"description": "Create gallery item"
+					}
+				},
+				{
+					"name": "Update Gallery Item",
+					"request": {
+						"method": "PUT",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"link\": \"https://updated-link.com\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/gallery/{{gallery_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["gallery", "{{gallery_id}}"]
+						},
+						"description": "Update gallery item"
+					}
+				},
+				{
+					"name": "Delete Gallery Item",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/gallery/{{gallery_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["gallery", "{{gallery_id}}"]
+						},
+						"description": "Delete gallery item. Returns 200 with { \"success\": true, \"message\": \"Gallery item deleted successfully.\" }"
+					}
+				}
+			]
+		},
+		{
+			"name": "Activities",
+			"item": [
+				{
+					"name": "List Activities",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/activities?per_page=15",
+							"host": ["{{base_url}}"],
+							"path": ["activities"],
+							"query": [
+								{"key": "per_page", "value": "15"}
+							]
+						},
+						"description": "Get paginated activities (includes category)"
+					}
+				},
+				{
+					"name": "Get Activity",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/activities/{{activity_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["activities", "{{activity_id}}"]
+						},
+						"description": "Get single activity by ID"
+					}
+				},
+				{
+					"name": "Create Activity",
+					"request": {
+						"method": "POST",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"Museum Visit\",\n  \"description\": \"Cultural activity\",\n  \"tags\": \"culture, museum\",\n  \"location\": \"Riyadh\",\n  \"working_hours\": \"9AM - 5PM\",\n  \"phone\": \"+966501234567\",\n  \"rate\": 4.5,\n  \"category_id\": 1\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/activities",
+							"host": ["{{base_url}}"],
+							"path": ["activities"]
+						},
+						"description": "Create activity. category_id is optional."
+					}
+				},
+				{
+					"name": "Update Activity",
+					"request": {
+						"method": "PUT",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"Updated Activity\",\n  \"description\": \"Updated description\",\n  \"tags\": \"updated, tags\",\n  \"location\": \"Updated location\",\n  \"working_hours\": \"10AM - 6PM\",\n  \"phone\": \"+966509876543\",\n  \"rate\": 5,\n  \"category_id\": 1\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/activities/{{activity_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["activities", "{{activity_id}}"]
+						},
+						"description": "Update activity"
+					}
+				},
+				{
+					"name": "Delete Activity",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/activities/{{activity_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["activities", "{{activity_id}}"]
+						},
+						"description": "Delete activity. Returns 200 with { \"success\": true, \"message\": \"Activity deleted successfully.\" }"
+					}
+				}
+			]
+		},
+		{
+			"name": "Events",
+			"item": [
+				{
+					"name": "List Events",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/events?per_page=15",
+							"host": ["{{base_url}}"],
+							"path": ["events"],
+							"query": [
+								{"key": "per_page", "value": "15"}
+							]
+						},
+						"description": "Get paginated events"
+					}
+				},
+				{
+					"name": "Get Event",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/events/{{event_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["events", "{{event_id}}"]
+						},
+						"description": "Get single event by ID"
+					}
+				},
+				{
+					"name": "Create Event",
+					"request": {
+						"method": "POST",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"Cultural Festival\",\n  \"description\": \"Annual cultural event\",\n  \"date\": \"2025-12-01\",\n  \"time\": \"18:00\",\n  \"location\": \"Riyadh Convention Center\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/events",
+							"host": ["{{base_url}}"],
+							"path": ["events"]
+						},
+						"description": "Create event. date format: YYYY-MM-DD, time: HH:mm"
+					}
+				},
+				{
+					"name": "Update Event",
+					"request": {
+						"method": "PUT",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"Updated Event\",\n  \"description\": \"Updated description\",\n  \"date\": \"2025-12-15\",\n  \"time\": \"19:00\",\n  \"location\": \"New Venue\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/events/{{event_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["events", "{{event_id}}"]
+						},
+						"description": "Update event"
+					}
+				},
+				{
+					"name": "Delete Event",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/events/{{event_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["events", "{{event_id}}"]
+						},
+						"description": "Delete event. Returns 200 with { \"success\": true, \"message\": \"Event deleted successfully.\" }"
+					}
+				}
+			]
+		},
+		{
+			"name": "Users",
+			"item": [
+				{
+					"name": "List Users",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/users?per_page=15",
+							"host": ["{{base_url}}"],
+							"path": ["users"],
+							"query": [
+								{"key": "per_page", "value": "15", "description": "Items per page (max 100)"}
+							]
+						},
+						"description": "Get paginated list of users"
+					}
+				},
+				{
+					"name": "Get User",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/users/{{user_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["users", "{{user_id}}"]
+						},
+						"description": "Get single user by ID"
+					}
+				},
+				{
+					"name": "Create User",
+					"request": {
+						"method": "POST",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"New User\",\n  \"email\": \"newuser@example.com\",\n  \"password\": \"password\",\n  \"password_confirmation\": \"password\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/users",
+							"host": ["{{base_url}}"],
+							"path": ["users"]
+						},
+						"description": "Create user. Password min 8 characters."
+					}
+				},
+				{
+					"name": "Update User",
+					"request": {
+						"method": "PUT",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Updated Name\",\n  \"email\": \"updated@example.com\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/users/{{user_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["users", "{{user_id}}"]
+						},
+						"description": "Update user. Include password and password_confirmation only to change password."
+					}
+				},
+				{
+					"name": "Delete User",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/users/{{user_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["users", "{{user_id}}"]
+						},
+						"description": "Delete user. Returns 200 with success message."
+					}
+				}
+			]
+		},
+		{
+			"name": "Settings",
+			"item": [
+				{
+					"name": "List Settings",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/settings",
+							"host": ["{{base_url}}"],
+							"path": ["settings"]
+						},
+						"description": "Get all settings as key-value object"
+					}
+				},
+				{
+					"name": "Update Settings",
+					"request": {
+						"method": "PUT",
+						"header": [{"key": "Content-Type", "value": "application/json"}],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"settings\": [\n    { \"key\": \"site_name\", \"value\": \"Riyadh Amaken\" },\n    { \"key\": \"contact_email\", \"value\": \"info@example.com\" }\n  ]\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/settings",
+							"host": ["{{base_url}}"],
+							"path": ["settings"]
+						},
+						"description": "Update settings. Sends array of { key, value }. Creates or updates each key."
+					}
+				}
+			]
+		}
+	]
+}
